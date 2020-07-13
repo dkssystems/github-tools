@@ -44,6 +44,8 @@ local_root = args.local_root.replace('\\', '/').strip().rstrip('/')
 for local_parent, child_dirs, child_files in os.walk(local_root, onerror=walk_error):
     if '.git' in child_dirs:
         child_dirs.remove('.git') # ignore .git directories
+    if '.github' in child_dirs:
+        child_dirs.remove('.github') # ignore .github directories
         
     archive_parent = str(local_parent[(len(local_root)+1)::].replace(os.sep, posixpath.sep)) # Turn local to archive parent
     for child_file in child_files:
