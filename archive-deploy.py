@@ -4,11 +4,10 @@ import zipfile, posixpath, shutil
 import argparse
 import pathspec
 import zlib
-import requests
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--archive-url', action='store', dest='archive_url', required=True, help='Archive file URL')
+parser.add_argument('--archive', action='store', dest='archive', required=True, help='Archive file')
 parser.add_argument('--remote', action='store', dest='remote_root', required=True, help='Remote root folder')
 parser.add_argument('--artifacts', action='store', dest='artifacts_root', required=False, help='Artifacts (backup) root folder')
 parser.add_argument('--dry-run', action='store_true', dest='dry_run', default=False, help='Output only (no changes)')
@@ -72,10 +71,9 @@ def artifact_file(from_path, to_path):
 
         shutil.move(from_path, to_path)
 
-print ("DOWNLOADING ARCHIVE")
-response = requests.get(args.archive_url)
+print ("READING ARCHIVE")
 
-with zipfile.ZipFile(io.BytesIO(response.content)) as zip:
+with zipfile.ZipFile(args.archive) as zip:
     if zip.testzip() is not None:
         print ('ERROR: archive failed CRC test')
         exit()
