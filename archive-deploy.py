@@ -60,9 +60,12 @@ def copy_zip_file(zip, archive_info, archive_path, remote_path):
         with source, target:
             shutil.copyfileobj(source, target)
 
-        # It also doesn't set file permissions
-        permissions = archive_info.external_attr >> 16L
-        os.chmod(remote_path, permissions)
+        # It also doesn't set file permissions - handle execute bit on Unix
+        if os.name == 'posix':
+            if info.create_system == 3 and os.path.isfile(remote_path): # 3 is Unix
+                unix_attributes = archive_info.external_attr >> 16
+                if unix_attributes & S_IXUSR:
+                    os.chmod(remote_path, os.stat(remote_path).st_mode | S_IXUSR)
 
 def artifact_file(from_path, to_path):
     print ('ARTIFACT ' + from_path)
