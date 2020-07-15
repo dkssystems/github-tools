@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys, os, io
+from stat import S_IXUSR
 import zipfile, posixpath, shutil
 import argparse
 import pathspec
