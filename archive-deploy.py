@@ -62,7 +62,7 @@ def copy_zip_file(zip, archive_info, archive_path, remote_path):
 
         # It also doesn't set file permissions - handle execute bit on Unix
         if os.name == 'posix':
-            if info.create_system == 3 and os.path.isfile(remote_path): # 3 is Unix
+            if archive_info.create_system == 3 and os.path.isfile(remote_path): # 3 is Unix
                 unix_attributes = archive_info.external_attr >> 16
                 if unix_attributes & S_IXUSR:
                     os.chmod(remote_path, os.stat(remote_path).st_mode | S_IXUSR)
