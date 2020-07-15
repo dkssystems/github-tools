@@ -45,7 +45,7 @@ def walk_error(err):
     print (err)
     exit(1)
 
-def copy_zip_file(zip, archive_path, remote_path):
+def copy_zip_file(zip, archive_info, archive_path, remote_path):
     print ('DEPLOYING ' + archive_path)
     print (" --> " + remote_path)
 
@@ -59,6 +59,10 @@ def copy_zip_file(zip, archive_path, remote_path):
         target = open(remote_path, "wb")
         with source, target:
             shutil.copyfileobj(source, target)
+
+        # It also doesn't set file permissions
+        permissions = archive_info.external_attr >> 16L
+        os.chmod(remote_path, permissions)
 
 def artifact_file(from_path, to_path):
     print ('ARTIFACT ' + from_path)
@@ -145,7 +149,7 @@ with zipfile.ZipFile(args.archive) as zip:
                 if changed:
                     # File should be deployed
                     artifact_file(remote_child_path, artifacts_child_path)
-                    copy_zip_file(zip, archive_child_path, remote_child_path)
+                    copy_zip_file(zip, archive_info, archive_child_path, remote_child_path)
 
                 del archive_hash[archive_child_path]
             else:
@@ -155,7 +159,8 @@ with zipfile.ZipFile(args.archive) as zip:
     print ('NEW FILES')
     # Files remaining in hash are new
     for archive_path in archive_hash.keys():
+        archive_info = zip.getinfo(posixpath.join('copies', archive_path))
         remote_path = os.path.join(remote_root, archive_path.replace(posixpath.sep, os.sep)) # Turn archive to remote parent
-        copy_zip_file(zip, archive_path, remote_path)
+        copy_zip_file(zip, archive_info, archive_path, remote_path)
 
 print ("DONE")
