@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--archive', action='store', dest='archive', required=True, help='Filename of archive created')
 parser.add_argument('--local', action='store', dest='local_root', required=True, help='Local root folder')
 parser.add_argument('--dry-run', action='store_true', dest='dry_run', default=False, help='Output only (no changes)')
+parser.add_argument('--quiet', action='store_true', dest='quiet', default=False, help='Do not list individual files')
 
 args = parser.parse_args()
 
@@ -69,8 +70,9 @@ if not args.dry_run:
 
         copies_meta = []
         for copy in copies:
-            print (copy['local_path'])
-            print (" --> " + copy['archive_path'])
+            if not args.quiet:
+                print (copy['local_path'])
+                print (" --> " + copy['archive_path'])
             copies_meta.append(copy['archive_path'])
             zip.write(copy['local_path'], posixpath.join('copies', copy['archive_path']))
         
