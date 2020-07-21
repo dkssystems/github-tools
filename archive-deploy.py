@@ -93,6 +93,7 @@ with zipfile.ZipFile(args.archive) as zip:
     ignore = None
     ignores = read_list(zip, '.pushignore', None)
     if ignores is not None:
+        print ("LOADING .PUSHIGNORE RULES")
         ignore = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, ignores)
             
     # Read through remote files and check for differences
